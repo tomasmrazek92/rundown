@@ -239,6 +239,18 @@ function iniTags() {
     });
   });
 }
+function dynamicDropdownLabel() {
+  $('.filter-drodown_list .filter-pill_item').on('click', function () {
+    if ($(window).width() < 768) {
+      let currentText = $(this).text();
+      let dropdownLabel = $(this)
+        .closest('.w-dropdown')
+        .find('.w-dropdown-toggle [dropdown-label]');
+
+      dropdownLabel.text(currentText);
+    }
+  });
+}
 
 // Animations
 function rotatingBorders() {
@@ -374,7 +386,6 @@ function animateCommunityBanner() {
       rotate: -15,
       scale: function (i, el) {
         let isMain = $(el).hasClass('cc-main');
-        console.log(isMain);
         return !isMain ? 1.1 : 1;
       },
       ease: 'none',
@@ -478,6 +489,7 @@ $(document).ready(function () {
   initTabs();
   initDynamicContent();
   iniTags();
+  dynamicDropdownLabel();
   rotatingBorders();
   initFS();
   initHeroChange();
