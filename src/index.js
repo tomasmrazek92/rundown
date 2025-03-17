@@ -147,6 +147,10 @@ function initTabs() {
       // Get the target content to display
       const targetContent = tabContent.eq(tabIndex);
 
+      // Get the index of the nested content so we can load the dynamic items
+      let nestedList = targetContent.find('[data-nest]');
+      initDynamicContent(nestedList);
+
       // First hide all tab content
       tabContent.hide();
 
@@ -161,21 +165,56 @@ function initTabs() {
     });
   });
 }
-function initDynamicContent() {
-  $('[data-nest]').each(function () {
-    let slug = $(this).attr('data-nest');
-    let dataCollection = $(this).attr('data-collection');
+function initDynamicContent(el) {
+  $(el).each(function () {
+    let $this = $(this);
+    let slug = $this.attr('data-nest');
+    let dataCollection = $this.attr('data-collection');
+    let isLoaded = $this.hasClass('loaded');
 
-    if (slug && dataCollection) {
-      jQuery(`[data-nest="${slug}"]`).load(
-        `/${dataCollection}/${slug} [data-nest-list]`,
-        function (response, status) {
-          if (status === 'success') {
-            iniTags();
-          } else {
-          }
+    if (!isLoaded && slug && dataCollection) {
+      // Store the initial height
+      let initialHeight = $this.height();
+
+      // Set explicit height to prevent collapse during load
+      $this.css({
+        height: initialHeight + 'px',
+        overflow: 'hidden',
+      });
+
+      // Load the content
+      $this.load(`/${dataCollection}/${slug} [data-nest-list]`, function (response, status) {
+        if (status === 'success') {
+          $this.addClass('loaded');
+
+          // Initialize tags
+          iniTags();
+
+          // Add a small delay to ensure DOM is settled
+          setTimeout(function () {
+            // Get the proper auto height
+            $this.css('height', 'auto');
+            let autoHeight = $this.height();
+
+            // Set back to initial height
+            $this.css('height', initialHeight + 'px');
+
+            // Now animate to the captured auto height
+            gsap.to($this, {
+              height: autoHeight,
+              duration: 0.5,
+              ease: 'power2.out',
+              onComplete: function () {
+                // Remove fixed height constraints
+                $this.css({
+                  height: 'auto',
+                  overflow: '',
+                });
+              },
+            });
+          }, 100); // 100ms delay should be enough
         }
-      );
+      });
     }
   });
 }
@@ -487,7 +526,6 @@ function initMarqueeScrollDirection() {
 $(document).ready(function () {
   initNav();
   initTabs();
-  initDynamicContent();
   iniTags();
   dynamicDropdownLabel();
   rotatingBorders();
