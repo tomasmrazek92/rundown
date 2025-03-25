@@ -112,6 +112,7 @@ function initFS() {
   });
 }
 function mirrorFormBtns() {
+  // Finds the closest form input
   $('[data-mirror-form-btn="true"]').on('click', function () {
     let form = $(this).closest('form');
     let input = form.find('input[type="submit"]');
