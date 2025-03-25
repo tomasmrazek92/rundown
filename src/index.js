@@ -111,6 +111,13 @@ function initFS() {
     resetButton.trigger('click');
   });
 }
+function mirrorFormBtns() {
+  $('[data-mirror-form-btn="true"]').on('click', function () {
+    let form = $(this).closest('form');
+    let input = form.find('input[type="submit"]');
+    input.trigger('click');
+  });
+}
 
 // Dynamic Content
 function initTabs() {
@@ -526,6 +533,7 @@ function initMarqueeScrollDirection() {
 $(document).ready(function () {
   initNav();
   initTabs();
+  mirrorFormBtns();
   iniTags();
   dynamicDropdownLabel();
   rotatingBorders();
