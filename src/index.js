@@ -316,7 +316,7 @@ function initHeroChange() {
   let mm = gsap.matchMedia();
 
   mm.add('(min-width: 992px)', () => {
-    $('html').each(function () {
+    $('[data-hero-dark-change]').each(function () {
       // This code will only run on screens 992px or wider
       let tl = gsap.timeline({
         scrollTrigger: {
