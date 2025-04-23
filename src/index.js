@@ -320,7 +320,7 @@ function initHeroChange() {
       // This code will only run on screens 992px or wider
       let tl = gsap.timeline({
         scrollTrigger: {
-          trigger: $(this), // Use body element instead of window
+          trigger: $('html'), // Use body element instead of window
           start: '25% top', // Start at the top of the viewport
           toggleActions: 'play none none reverse',
         },
@@ -543,4 +543,211 @@ $(document).ready(function () {
   initDynamicFilterBG();
   animateCommunityBanner();
   initMarqueeScrollDirection();
+});
+
+function initScrollIntoViewStaggerGSAP() {
+  gsap.registerPlugin(ScrollTrigger);
+  const triggers = document.querySelectorAll('[gsap-stagger-trigger]');
+
+  if (triggers.length === 0) {
+    return;
+  }
+
+  triggers.forEach(function (t) {
+    const e = t.querySelectorAll('[gsap-stagger-item]');
+    const r = t.hasAttribute('gsap-delay') ? t.getAttribute('gsap-delay') : 0;
+    const a = t.hasAttribute('gsap-stagger-interval')
+      ? t.getAttribute('gsap-stagger-interval')
+      : 0.4;
+    const g = t.hasAttribute('gsap-stagger-ypercent')
+      ? t.getAttribute('gsap-stagger-ypercent')
+      : 20;
+
+    gsap.set(e, {
+      yPercent: g,
+      autoAlpha: 0,
+    });
+
+    let s = gsap.timeline({
+      paused: true,
+      scrollTrigger: {
+        trigger: t,
+        start: 'top bottom',
+        onEnter: () => s.play(),
+      },
+    });
+
+    s.fromTo(
+      e,
+      {
+        yPercent: g,
+        autoAlpha: 0,
+      },
+      {
+        autoAlpha: 1,
+        yPercent: 0,
+        duration: 1,
+        ease: 'Power3.easeOut',
+        stagger: {
+          amount: a,
+        },
+        delay: r,
+      }
+    );
+  });
+}
+function initScrollIntoViewFadeGSAP() {
+  gsap.registerPlugin(ScrollTrigger),
+    gsap.set('[gsap-fade-in]', {
+      autoAlpha: 0,
+    });
+  document.querySelectorAll('[gsap-fade-in]').forEach((t) => {
+    const e = t.hasAttribute('gsap-delay') ? t.getAttribute('gsap-delay') : 0,
+      a = t.hasAttribute('gsap-fade-duration') ? t.getAttribute('gsap-fade-duration') : 1,
+      r = t.hasAttribute('gsap-fade-slideup') ? t.getAttribute('gsap-fade-slideup') : 0;
+    let i = gsap.timeline({
+      paused: !0,
+      scrollTrigger: {
+        trigger: t,
+        start: 'top bottom',
+        onEnter: () => i.play(),
+      },
+    });
+    i.fromTo(
+      t,
+      {
+        y: r,
+        autoAlpha: 0,
+      },
+      {
+        y: 0,
+        autoAlpha: 1,
+        duration: a,
+        ease: 'Power2.easeOut',
+        delay: e,
+      }
+    );
+  });
+}
+function initScrollIntoViewTextGSAP() {
+  const e = document.querySelectorAll('[text-split]'),
+    t = document.querySelectorAll('[gsap-word-slide-up]'),
+    r = document.querySelectorAll('[gsap-text-slide-up]'),
+    a = 'gsap-delay';
+  function l(e, t) {
+    ScrollTrigger.create({
+      trigger: e,
+      start: 'top bottom',
+      onEnter: () => t.play(),
+    });
+  }
+  e.forEach((e, t) => {
+    new SplitType(e, {
+      types: 'words, lines',
+      tagName: 'span',
+    });
+  }),
+    t.forEach((e) => {
+      let t = e.closest('[text-split]').hasAttribute(a) ? e.getAttribute(a) : 0,
+        r = gsap.timeline({
+          paused: !0,
+        });
+      r.fromTo(
+        e.querySelectorAll('.word'),
+        {
+          opacity: 0,
+          yPercent: 100,
+        },
+        {
+          opacity: 1,
+          yPercent: 0,
+          duration: 1,
+          ease: 'Power3.easeOut',
+          stagger: {
+            amount: 0.15,
+          },
+          delay: t,
+        }
+      ),
+        l(e, r);
+    }),
+    r.forEach((e) => {
+      let t = document.createElement('div');
+      t.classList.add('line'),
+        (t.style.visibility = 'inherit'),
+        e.parentNode.insertBefore(t, e),
+        t.appendChild(e);
+      let r = e.hasAttribute(a) ? e.getAttribute('gsap-delay') : 0,
+        i = gsap.timeline({
+          paused: !0,
+        });
+      i.fromTo(
+        e,
+        {
+          opacity: 0,
+          yPercent: 100,
+        },
+        {
+          opacity: 1,
+          yPercent: 0,
+          duration: 1,
+          ease: 'Power3.easeOut',
+          stagger: {
+            amount: 0.15,
+          },
+          delay: r,
+        }
+      ),
+        l(e.parentElement, i);
+    }),
+    gsap.registerPlugin(ScrollTrigger),
+    gsap.set('[text-split]', {
+      opacity: 1,
+      delay: 0.1,
+    });
+}
+function initScrollIntoViewScaleGSAP() {
+  gsap.registerPlugin(ScrollTrigger);
+  document.querySelectorAll('[data-gsap-scale]').forEach((t) => {
+    const a = t.hasAttribute('gsap-delay') ? t.getAttribute('gsap-delay') : 0,
+      e = t.hasAttribute('data-gsap-scale-duration')
+        ? t.getAttribute('data-gsap-scale-duration')
+        : 1,
+      s = t.hasAttribute('data-gsap-scale-start') ? t.getAttribute('data-gsap-scale-start') : 1,
+      r = t.hasAttribute('data-gsap-scale-end') ? t.getAttribute('data-gsap-scale-end') : 1,
+      l = t.hasAttribute('data-gsap-scale-pos')
+        ? t.getAttribute('data-gsap-scale-pos')
+        : 'top bottom';
+    gsap.set('[data-gsap-scale]', {
+      scale: s,
+    });
+    let g = gsap.timeline({
+      paused: !0,
+      scrollTrigger: {
+        trigger: t,
+        start: l,
+        onEnter: () => g.play(),
+      },
+    });
+    g.fromTo(
+      t,
+      {
+        scale: s,
+      },
+      {
+        scale: r,
+        duration: e,
+        ease: 'Power2.easeOut',
+        delay: a,
+      }
+    );
+  });
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  //---- init into view animations ----
+  initScrollIntoViewTextGSAP();
+  initScrollIntoViewStaggerGSAP();
+  initScrollIntoViewFadeGSAP();
+  initScrollIntoViewScaleGSAP();
 });
